@@ -1,0 +1,21 @@
+# Virtual environment
+venv/
+__pycache__/
+
+# Django-specific
+db.sqlite3
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Secrets
+*.env
+
+# Static and media files
+staticfiles/
+media/
+
+# OS-specific
+.DS_Store
+Thumbs.db

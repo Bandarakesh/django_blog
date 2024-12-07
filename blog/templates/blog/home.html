@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Blog</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Welcome to the Blog</h1>
+        </header>
+
+        <div class="auth-buttons">
+            {% if user.is_authenticated %}
+                <p>Welcome, {{ user.username }}!</p>
+                <a href="{% url 'logout' %}"><button>Logout</button></a>
+                <!-- Button to create a new post -->
+                <a href="{% url 'create_post' %}"><button>Create a Post</button></a>
+            {% else %}
+                <a href="{% url 'login' %}"><button>Login</button></a>
+                <a href="{% url 'register' %}"><button>Register</button></a>
+            {% endif %}
+        </div>
+
+        <h2>Latest Posts</h2>
+        <div class="posts">
+            {% for post in posts %}
+                <div class="post-box">
+                    <h3>{{ post.title }}</h3>
+                    <p>{{ post.content }}</p>
+
+                    <!-- Like Button -->
+                    {% if user.is_authenticated %}
+                        {% if post.id in liked_posts %}
+                            <!-- User has already liked the post -->
+                            <span class="liked">Liked</span>
+                        {% else %}
+                            <form method="POST" action="{% url 'like_post' post.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="like-btn">Like</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- Comment Section -->
+                    <h4>Comments</h4>
+                    <form method="POST" action="{% url 'comment_post' post.id %}">
+                        {% csrf_token %}
+                        <textarea name="content" placeholder="Add a comment..."></textarea>
+                        <button type="submit" class="comment-btn">Post Comment</button>
+                    </form>
+
+                    <!-- Display Comments -->
+                    {% for comment in post.comment_set.all %}
+                        <p><strong>{{ comment.author.username }}:</strong> {{ comment.content }}</p>
+                    {% empty %}
+                        <p>No comments yet.</p>
+                    {% endfor %}
+                </div>
+            {% empty %}
+                <p>No posts available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 School Blog. All rights reserved.</p>
+    </footer>
+</body>
+</html>
